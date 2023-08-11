@@ -22,7 +22,7 @@ app = FastAPI()
 df_recomendado = df.loc[lambda df:(df["vote_average"] > 6)]
 
 df_recomendado.loc[:, "release_year"] = df_recomendado["release_year"].astype(str)
-df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]]
+df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]].copy()
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
 
 df_recomendado = pd.merge(df_recomendado, Crew[["name","id_movie"]], on = "id_movie")
