@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import linear_kernel
 
-df = pd.read_csv("movies_data.csv",usecols = ["genres","id_movie","overview","title","vote_average","release_year"])
+df = pd.read_csv("movies_data.csv", index_col = [0])
 Crew = pd.read_csv("Crew.csv", index_col = [0])
 paises = pd.read_csv("Production_countries.csv")
 
@@ -15,13 +15,13 @@ app = FastAPI()
 
 '''Por defecto dentro de nuestras recomendaciones no vamos a recomendar películas "malas"
 por lo que vamos a tomar solo las películas que están por encima de la media en calificación'''
-df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.4)]
+df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.5)]
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
 df_r = df_recomendado["genres"] + df_recomendado["overview"]
-
+del df_recomendado
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_r)
-
+del df_r
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
 @app.get("/idiomas/{Idiomas}")
@@ -95,4 +95,5 @@ def busqueda(titulo:str):
     puntaje_coseno = puntaje_coseno[1:5]
     cos_indices = [i[0] for i in puntaje_coseno]
     resultado = df_recomendado["title"].iloc[cos_indices]
+    del idx, puntaje_coseno, cos_indices
     return {'lista recomendada': resultado}
