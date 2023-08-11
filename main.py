@@ -16,7 +16,6 @@ crew = crew[mask]
 
 app = FastAPI()
 
-
 #p = df.duplicated("id_movie")
 #df = df.drop(df[p].index)
 #df = df.dropna(subset=["title"])
