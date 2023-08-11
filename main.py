@@ -72,8 +72,6 @@ def productoras_exitosas(productora:str):
 
 @app.get('/get_director/{nombre_director}')
 def get_director(nombre_director:str):
-    mask = Crew["name"] == nombre_director
-    Crew = Crew[mask]
     Crew = pd.merge(Crew, df, on = "id_movie")
     retorno_total = Crew["revenue"].sum()
     peliculas = Crew["title"].to_list()
