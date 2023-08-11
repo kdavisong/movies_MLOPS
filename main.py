@@ -5,9 +5,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import linear_kernel
 
-df = pd.read_csv("movies_data.csv", index_col = [0])
+df = pd.read_csv("movies_data.csv", index_col = [0], usecols = ["id_movie","overview","title","vote_average","vote_count","release_year","genres"])
 Crew = pd.read_csv("Crew.csv", index_col = [0])
-genres = pd.read_csv("genres.csv", index_col = [0])
 paises = pd.read_csv("Production_countries.csv")
 
 
@@ -17,9 +16,7 @@ app = FastAPI()
 '''Por defecto dentro de nuestras recomendaciones no vamos a recomendar películas "malas"
 por lo que vamos a tomar solo las películas que están por encima de la media en calificación'''
 df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.4)]
-df_recomendado.loc[:, "release_year"] = df_recomendado["release_year"].astype(str)
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
-df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]]
 df_r = df_recomendado["genres"] + df_recomendado["overview"]
 
 tfidf = TfidfVectorizer(stop_words='english')
