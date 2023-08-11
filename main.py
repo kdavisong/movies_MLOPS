@@ -18,11 +18,10 @@ por lo que vamos a tomar solo las películas que están por encima de la media e
 df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.5)]
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
 df_r = df_recomendado["genres"] + df_recomendado["overview"]
-del df_recomendado
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_r)
 del df_r
-cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
 
 @app.get("/idiomas/{Idiomas}")
 def obtener_Idiomas(Idiomas:str):
@@ -89,6 +88,7 @@ def franquicia(franquicia:str):
 @app.get('/recomendacion/{titulo}')
 def busqueda(titulo:str):
     titulo = str.lower(titulo)
+    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
     idx = df_recomendado[df_recomendado["title"].str.lower() == titulo].index.to_list()[0]
     puntaje_coseno = enumerate(cosine_sim[idx])
     puntaje_coseno = sorted(puntaje_coseno, key = lambda x: x[1], reverse = True)    
