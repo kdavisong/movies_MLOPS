@@ -23,7 +23,7 @@ df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","v
 df_r = df_recomendado["genres"] + df_recomendado["overview"]
 
 tfidf = TfidfVectorizer(stop_words='english')
-tfidf_matrix = tfidf.fit_transform(df_recomendado[df_r])
+tfidf_matrix = tfidf.fit_transform(df_r)
 
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
 
