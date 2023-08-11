@@ -20,12 +20,11 @@ app = FastAPI()
 #df = df.drop(df[p].index)
 #df = df.dropna(subset=["title"])
 df_recomendado = df.loc[lambda df:(df["vote_average"] > 6)]
-
 df_recomendado.loc[:, "release_year"] = df_recomendado["release_year"].astype(str)
-df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]].copy()
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
+df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]].copy()
 
-df_recomendado = pd.merge(df_recomendado.copy(), Crew[["name", "id_movie"]], on="id_movie")
+df_recomendado = pd.merge(df_recomendado, Crew[["name", "id_movie"]], on="id_movie").copy()
 df_recomendado["r"] = df_recomendado["genres"] + df_recomendado["overview"] + df_recomendado["name"] 
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_recomendado["r"])
@@ -95,7 +94,6 @@ def franquicia(franquicia:str):
     ganancia_total = resultado["revenue"].sum()
     ganancia_promedio = ganancia_total / cantidad
     return {'franquicia':franquicia, 'cantidad':cantidad, 'ganancia_total':ganancia_total, 'ganancia_promedio':ganancia_promedio}
-
 
 @app.get('/recomendacion/{titulo}')
 def busqueda(titulo:str):
