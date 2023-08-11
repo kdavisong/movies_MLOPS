@@ -44,7 +44,7 @@ pydantic==1.10.9
 Pygments==2.15.1
 pyparsing==3.0.9
 python-dateutil==2.8.2
-python-dotenv==1.0.0
+python-dotenv==0.21.1
 python-multipart==0.0.6
 pytz==2023.3
 pywin32==306
