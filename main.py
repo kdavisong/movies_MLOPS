@@ -9,12 +9,13 @@ from sklearn.metrics.pairwise import linear_kernel
 df = pd.read_csv("movies_data.csv", index_col = [0])
 crew = pd.read_csv("Crew.csv", index_col = [0])
 genres = pd.read_csv("genres.csv", index_col = [0])
-paises = pd.read_csv("Production_countries.csv")
-saga = pd.read_csv("Saga.csv")
+paises = pd.read_csv("production_countries.csv")
+saga = pd.read_csv("saga.csv")
 mask = (crew["job"] == "Director")
 crew = crew[mask]
 
 app = FastAPI()
+
 
 #p = df.duplicated("id_movie")
 #df = df.drop(df[p].index)
@@ -23,7 +24,7 @@ df_recomendado = df.loc[lambda df:(df["vote_average"] > 6)]
 
 df_recomendado.loc[:, "release_year"] = df_recomendado["release_year"].astype(str)
 df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]]
-df_recomendado["overview"] = df_recomendado["overview"].str.lower()
+df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
 
 df_recomendado = pd.merge(df_recomendado, crew[["name","id_movie"]], on = "id_movie")
 df_recomendado["r"] = df_recomendado["genres"] + df_recomendado["overview"] + df_recomendado["name"] 
