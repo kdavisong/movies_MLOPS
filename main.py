@@ -17,12 +17,12 @@ crew = crew[mask]
 app = FastAPI()
 
 
-p = df.duplicated("id_movie")
-df = df.drop(df[p].index)
-df = df.dropna(subset=["title"])
-
+#p = df.duplicated("id_movie")
+#df = df.drop(df[p].index)
+#df = df.dropna(subset=["title"])
 df_recomendado = df.loc[lambda df:(df["vote_average"] > 6)]
-df_recomendado["release_year"] = df_recomendado["release_year"].to_string()
+
+df_recomendado.loc[:, "release_year"] = df_recomendado["release_year"].astype(str)
 df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]]
 df_recomendado["overview"] = df_recomendado["overview"].str.lower()
 
@@ -44,14 +44,12 @@ def obtener_Idiomas(Idiomas:str):
     
 @app.get('/peliculas_duracion/{pelicula}')
 def peliculas_duracion(pelicula:str):
-    try:
-        pelicula = str.lower(pelicula)
-        resultado = df[df["title"].str.lower() == pelicula]
-        anio = resultado["release_year"][0]
-        duracion = resultado["runtime"][0]
-        return {'pelicula':pelicula.upper(), 'duracion':duracion, 'anio':anio}
-    except:
-        return("Película no registrada")
+    pelicula = str.lower(pelicula) 
+    resultado = df[df["title"].str.lower() == pelicula]
+    anio = resultado["release_year"]
+    duracion = resultado["runtime"]
+    return {'pelicula':pelicula.upper(), 'duracion':duracion, 'anio':anio}
+
     
 @app.get('/peliculas_pais/{pais}')
 def peliculas_pais(pais:str):
@@ -100,8 +98,7 @@ def franquicia(franquicia:str):
 
 
 @app.get('/recomendacion/{titulo}')
-
-def busqueda(titulo:str, cosine_sim = cosine_sim):
+def busqueda(titulo:str):
     titulo = str.lower(titulo)
     idx = df_recomendado[df_recomendado["title"].str.lower() == titulo].index.to_list()[0]
     puntaje_coseno = enumerate(cosine_sim[idx])
