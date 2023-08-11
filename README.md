@@ -23,3 +23,6 @@ En el presente repositorio asimismo se encuentran dos archivos.
 
 1. PI.ipynb: el cual contiene el ETL y el EDA
 2. Main.py: archivo vinculado al deploy donde encontramos las consultas configuradas
+
+## Enlace para acceder al sistema de consulta:
+https://consulta-database-de-peliculas.onrender.com/docs
