@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from pydantic import BaseModel
 import pandas as pd
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -10,22 +9,19 @@ df = pd.read_csv("movies_data.csv", index_col = [0])
 Crew = pd.read_csv("Crew.csv", index_col = [0])
 genres = pd.read_csv("genres.csv", index_col = [0])
 paises = pd.read_csv("Production_countries.csv")
-saga = pd.read_csv("Saga.csv")
 
 
 app = FastAPI()
 
 
-#p = df.duplicated("id_movie")
-#df = df.drop(df[p].index)
-#df = df.dropna(subset=["title"])
+'''Por defecto dentro de nuestras recomendaciones no vamos a recomendar películas "malas"
+por lo que vamos a tomar solo las películas que están por encima de la media en calificación'''
 df_recomendado = df.loc[lambda df:(df["vote_average"] > 6)]
 df_recomendado.loc[:, "release_year"] = df_recomendado["release_year"].astype(str)
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
-df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]].copy()
+df_recomendado = df_recomendado[["id_movie","overview","title","vote_average","vote_count","release_year","genres"]]
+df_r = df_recomendado["genres"] + df_recomendado["overview"]
 
-df_recomendado = pd.merge(df_recomendado, Crew[["name", "id_movie"]], on="id_movie").copy()
-df_recomendado["r"] = df_recomendado["genres"] + df_recomendado["overview"] + df_recomendado["name"] 
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_recomendado["r"])
 
@@ -61,8 +57,6 @@ def peliculas_pais(pais:str):
 @app.get('/productoras_exitosas/{productora}')
 def productoras_exitosas(productora:str):
     Productoras = pd.read_csv("Productoras.csv")
-    Productoras = Productoras["name"].str.replace(" ","_")
-    productora = str.replace(" ","_")
     Productoras = pd.merge(Productoras, df, on = "id_movie")
     mascara = Productoras["name"] == productora
     revenue = Productoras[mascara]["revenue"].sum()
