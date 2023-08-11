@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import linear_kernel
 
-df = pd.read_csv("movies_data.csv", index_col = [0], usecols = ["id_movie","overview","title","vote_average","vote_count","release_year","genres"])
+df = pd.read_csv("movies_data.csv",usecols = ["genres","id_movie","overview","title","vote_average","release_year"])
 Crew = pd.read_csv("Crew.csv", index_col = [0])
 paises = pd.read_csv("Production_countries.csv")
 
