@@ -10,7 +10,7 @@ df = pd.read_csv("movies_data.csv", index_col = [0])
 crew = pd.read_csv("Crew.csv", index_col = [0])
 genres = pd.read_csv("genres.csv", index_col = [0])
 paises = pd.read_csv("Production_countries.csv")
-saga = pd.read_csv("saga.csv")
+saga = pd.read_csv("Saga.csv")
 mask = (crew["job"] == "Director")
 crew = crew[mask]
 
