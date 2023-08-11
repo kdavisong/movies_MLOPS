@@ -9,7 +9,7 @@ from sklearn.metrics.pairwise import linear_kernel
 df = pd.read_csv("movies_data.csv", index_col = [0])
 crew = pd.read_csv("Crew.csv", index_col = [0])
 genres = pd.read_csv("genres.csv", index_col = [0])
-paises = pd.read_csv("production_countries.csv")
+paises = pd.read_csv("Production_countries.csv")
 saga = pd.read_csv("saga.csv")
 mask = (crew["job"] == "Director")
 crew = crew[mask]
