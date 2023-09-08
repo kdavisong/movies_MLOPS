@@ -1,6 +1,6 @@
 
-# Changed FROM python:3.10-slim to FROM python:3.10-bullseye
-# The python:3.10-slim image is based on debian:buster, which is a little bit old. Switched to python:3.10-bullseye, based on debian:bullseye 
+# Changed FROM python:3.-s10lim to FROM python:3.10-bullseye
+# The python:3.10-slim image is based on debian:buster, which is a little bit old. Switched to python:3.10-bullseye, based on debian:bullesey 
 FROM python:3.10-bullseye
 
 WORKDIR /app
@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y build-essential
 
 COPY requirements.txt .
 
-# Split the install command pip into two separate commands to issues avoid with cython packages
+# Split the install command pip into two separate commands to avoid issues with cython packages
 # Installed numpy and cython before installing the other requirements
 # Removed --no-cache-dir option as it is not required
 # Upgraded numpy to the latest version (1.21.4)
