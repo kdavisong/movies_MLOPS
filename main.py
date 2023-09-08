@@ -6,12 +6,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.metrics.pairwise import linear_kernel
 import re
 
-df = pd.read_csv("movies_data.csv", index_col = [0])
-Crew = pd.read_csv("Crew.csv", index_col = [0])
-paises = pd.read_csv("Production_countries.csv")
-
-app = FastAPI()
-
 
 '''Por defecto dentro de nuestras recomendaciones no vamos a recomendar películas "malas"
 por lo que vamos a tomar solo las películas que están por encima de la media en calificación'''
@@ -27,13 +21,22 @@ def df_r_limpio(row):
     cadena_limpia = re.sub("[^a-zA-Z0-9 ]", "", cadena_limpia)
     # Finalmente, eliminamos espacios consecutivos y los reemplazamos por un solo espacio
     return re.sub(" +", " ", cadena_limpia)
-df_recomendado = df.loc[lambda df:(df["vote_average"] > 7)]
+df = pd.read_csv("movies_data.csv", index_col = [0])
+Crew = pd.read_csv("Crew.csv", index_col = [0])
+paises = pd.read_csv("Production_countries.csv")
+df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.25)]
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
 df_recomendado.loc[:,"genres"]=df_recomendado["genres"].apply(limpiar_cadena).apply(df_r_limpio)
 df_r = (df_recomendado["genres"]*4) + df_recomendado["title"] + (df_recomendado["release_year"].astype(str))+ df_recomendado["overview"]
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_r)
 cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
+
+
+app = FastAPI()
+
+
 
 
 @app.get("/idiomas/{Idiomas}")
@@ -108,6 +111,7 @@ def busqueda(titulo:str):
     else:
         indice = idx[titulo]
     puntaje = enumerate(cosine_sim[indice])
+    del idx, indice
     puntaje = sorted(puntaje, key = lambda x: x[1], reverse = True)
     puntaje = puntaje[1:6]
     idx_puntaje = [i[0] for i in puntaje]
