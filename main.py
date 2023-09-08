@@ -10,7 +10,6 @@ df = pd.read_csv("movies_data.csv", index_col = [0])
 Crew = pd.read_csv("Crew.csv", index_col = [0])
 paises = pd.read_csv("Production_countries.csv")
 
-
 app = FastAPI()
 
 
@@ -28,14 +27,14 @@ def df_r_limpio(row):
     cadena_limpia = re.sub("[^a-zA-Z0-9 ]", "", cadena_limpia)
     # Finalmente, eliminamos espacios consecutivos y los reemplazamos por un solo espacio
     return re.sub(" +", " ", cadena_limpia)
-df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.2)]
+df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.25)]
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
 df_recomendado.loc[:,"genres"]=df_recomendado["genres"].apply(limpiar_cadena).apply(df_r_limpio)
-#Le damos mas peso a los generos por ello se multiplica x 5 la string de genre
-df_r = (df_recomendado["genres"]*5) + df_recomendado["title"] + (df_recomendado["release_year"].astype(str))+ df_recomendado["overview"]
-df_r.apply(df_r_limpio)
+df_r = (df_recomendado["genres"]*4) + df_recomendado["title"] + (df_recomendado["release_year"].astype(str))+ df_recomendado["overview"]
 tfidf = TfidfVectorizer(stop_words='english')
 tfidf_matrix = tfidf.fit_transform(df_r)
+cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
+
 
 @app.get("/idiomas/{Idiomas}")
 def obtener_Idiomas(Idiomas:str):
@@ -101,15 +100,17 @@ def franquicia(franquicia:str):
 
 @app.get('/recomendacion/{titulo}')
 def busqueda(titulo:str):
+    titulo = "Heat"
     titulo = str.lower(titulo)
-    cosine_sim = linear_kernel(tfidf_matrix, tfidf_matrix)
-
-    idx = pd.Series(df_r.index, index = df_recomendado["title"].str.lower())
-    indice= idx[titulo]
-
-    puntaje = enumerate(cosine_sim[indice] )
+    idx = pd.Series(df_r.index, index = df_recomendado["title"].str.lower()).drop_duplicates()
+    indice = idx[titulo]
+    if not isinstance(idx[titulo], np.int64): 
+        indice = idx[titulo][0]
+    else:
+        indice = idx[titulo]
+    puntaje = enumerate(cosine_sim[indice])
     puntaje = sorted(puntaje, key = lambda x: x[1], reverse = True)
     puntaje = puntaje[1:6]
     idx_puntaje = [i[0] for i in puntaje]
-    resultado = df_recomendado["title"].iloc[idx_puntaje]
+    resultado=df_recomendado["title"].iloc[idx_puntaje]
     return {'lista recomendada': resultado}
