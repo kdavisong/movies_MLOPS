@@ -27,7 +27,7 @@ def df_r_limpio(row):
     cadena_limpia = re.sub("[^a-zA-Z0-9 ]", "", cadena_limpia)
     # Finalmente, eliminamos espacios consecutivos y los reemplazamos por un solo espacio
     return re.sub(" +", " ", cadena_limpia)
-df_recomendado = df.loc[lambda df:(df["vote_average"] > 6.25)]
+df_recomendado = df.loc[lambda df:(df["vote_average"] > 7)]
 df_recomendado.loc[:, "overview"] = df_recomendado["overview"].str.lower()
 df_recomendado.loc[:,"genres"]=df_recomendado["genres"].apply(limpiar_cadena).apply(df_r_limpio)
 df_r = (df_recomendado["genres"]*4) + df_recomendado["title"] + (df_recomendado["release_year"].astype(str))+ df_recomendado["overview"]
@@ -100,7 +100,6 @@ def franquicia(franquicia:str):
 
 @app.get('/recomendacion/{titulo}')
 def busqueda(titulo:str):
-    titulo = "Heat"
     titulo = str.lower(titulo)
     idx = pd.Series(df_r.index, index = df_recomendado["title"].str.lower()).drop_duplicates()
     indice = idx[titulo]
